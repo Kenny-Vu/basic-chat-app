@@ -1,17 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import "./Lobby.css";
+
+import { UserContext } from "./UserContext";
 
 const Lobby = () => {
   const [username, setUsername] = useState("");
   const [room, setRoom] = useState("");
   const history = useHistory();
 
+  const { userInfo, setUserInfo } = useContext(UserContext);
+
   const handleLogin = (e) => {
     e.preventDefault();
     if (!username || !room) {
       return;
     }
+    setUserInfo({ username, room });
     history.push("./chat");
   };
 

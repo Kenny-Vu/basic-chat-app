@@ -1,10 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
+import io from "socket.io-client";
 
 import "./Chat.css";
+import { UserContext } from "./UserContext";
+
+const BASE_URL = "http://localhost:8000/"; //PORT of the server
 
 const Chat = () => {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
+  const { userInfo } = useContext(UserContext);
+
+  useEffect(() => {
+    const socket = io(BASE_URL);
+    socket.emit("user-connects", {
+      username: userInfo.username,
+      room: userInfo.room,
+    });
+  }, []);
 
   const submitMessage = (e) => {
     e.preventDefault();
