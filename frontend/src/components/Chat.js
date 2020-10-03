@@ -6,16 +6,24 @@ import { UserContext } from "./UserContext";
 
 const BASE_URL = "http://localhost:8000/"; //PORT of the server
 
+let socket;
+
 const Chat = () => {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
   const { userInfo } = useContext(UserContext);
 
   useEffect(() => {
-    const socket = io(BASE_URL);
+    socket = io(BASE_URL);
     socket.emit("user-connects", {
       username: userInfo.username,
       room: userInfo.room,
+    });
+    socket.on("welcome-user", ({ text }) => {
+      setMessages((prev) => [...prev, text]);
+    });
+    socket.on("display-message", ({ text, username }) => {
+      setMessages((prev) => [...prev, text]);
     });
   }, []);
 
@@ -25,6 +33,11 @@ const Chat = () => {
       return;
     }
     setMessages((prev) => [...prev, input]);
+    socket.emit("send-message", {
+      text: input,
+      username: userInfo.username,
+      room: userInfo.room,
+    });
     setInput("");
   };
 
